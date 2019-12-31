@@ -25,7 +25,7 @@ licensemsg() { \
 	}
 
 choosedotfiles() { \
-	edition="$(whiptail --title "Dotfiles" --menu "Select dotfiles (config files) to import for the user:" 12 70 3 0 "Max's default configuration (recommended)." 1 "Import a custom dotfile repo (advanced)." 2 "Don't import dotfiles (scary mode)." 3>&1 1>&2 2>&3 3>&1)" || error "User quit the installer."
+	edition="$(whiptail --title "Dotfiles" --menu "Select dotfiles (config files) to import for the user:" 12 70 3 0 "Max's default configuration (recommended)." 1 "Don't import dotfiles (scary mode)." 3>&1 1>&2 2>&3 3>&1)" || error "User quit the installer."
 	}
 
 getuser() { \
@@ -46,58 +46,26 @@ if echo "$edition" | grep '0' >/dev/null 2>&1; then
 	fi
 
 if echo "$edition" | grep '1' >/dev/null 2>&1; then
-	inputcustomrepo
-	cd /home/"$username"
-	git clone "$dotfilerepo"
-	mv /home/"$username"/*/* /home/"$username"/*/.* /home/"$username"/
-	fi
-
-if echo "$edition" | grep '2' >/dev/null 2>&1; then
 	cd /home/"$username"
 	fi
-}
-
-inputcustomrepo(){ \
-	dotfilerepo=$(whiptail --inputbox "Please enter a valid git repository." 10 60 3>&1 1>&2 2>&3 3>&1) || error "User quit the installer."
 }
 
 choosewm(){ \
 	wm="$(whiptail --title "Window Manager" --menu "Select Window Manager to use:" 10 80 2 0 "Suckless's Dynamic Window Manager (recommended)." 1 "Install without a window manager (you may have one installed already)." 3>&1 1>&2 2>&3 3>&1)" || error "User quit the installer."	
 }
 
-installwm(){ \
-if echo "$wm" | grep '0' >/dev/null 2>&1; then
-	cd /home/"$username"
-	git clone "https://github.com/eccomassimo/dwm.git"
-	cd /home/"$username"/dwm
-	apt install make libx11-dev libxrandr-dev libxinerama-dev libxft-dev xorg
-	make 
-	make clean install
-	cd /home/"$username"
-	git clone "https://github.com/eccomassimo/st.git"
-	cd /home/"$username"/st
-	make
-	make clean install
-	fi
-
-if echo "$wm" | grep '1' >/dev/null 2>&1; then
-	cd /home/"$username"
-	fi
-}
-
 chooseprograms(){ \
-	programs="$(whiptail --title "Programs" --menu "Select Programs to install:" 10 80 2 0 "Everything you need to get started (recommended)." 1 "Minimal (you won't even have a file manager)." 3>&1 1>&2 2>&3 3>&1)" || error "User quit the installer."	
+	programs="$(whiptail --title "Programs" --menu "Select Programs to install:" 10 80 2 0 "Everything you need to get started (recommended)." 1 "None (Don't install anything)." 3>&1 1>&2 2>&3 3>&1)" || error "User quit the installer."	
 }
 
 installprograms(){ \
 if echo "$programs" | grep '0' >/dev/null 2>&1; then
 	dpkg --add-architecture i386
-	apt install pcmanfm suckless-tools fonts-dejavu nitrogen arandr lxappearance cowsay cmatrix xfce4-screenshooter p7zip mpv xarchiver libreoffice audacity fonts-noto-color-emoji fonts-arphic-uming fonts-wqy-zenhei fonts-unfonts-core fonts-lexi-saebom irssi sxiv htop neofetch ttf-mscorefonts-installer software-properties-common steam bc ed lolcat figlet adwaita-qt adwaita-icon-theme clearlooks-phenix-theme screenkey obs-studio xcompmgr calcurse mpd
+	apt install cowsay cmatrix libreoffice audacity irssi lynx htop neofetch ttf-mscorefonts-installer steam lolcat figlet screenkey obs-studio youtube-dl lutris
 	fi
 
 if echo "$programs" | grep '1' >/dev/null 2>&1; then
-	dpkg --add-architecture i386
-	apt install xorg ssh alsa-utils pulseaudio dbus man-db ntp vim
+	echo "nope"
 	fi
 }
 
@@ -107,7 +75,7 @@ choosesudo(){ \
 
 makesudo(){ \
 if echo "$sudo" | grep '0' >/dev/null 2>&1; then
-	echo Access not granted.
+	echo "Access not granted."
 	fi
 
 if echo "$sudo" | grep '1' >/dev/null 2>&1; then
@@ -121,30 +89,16 @@ choosesudopasswd(){ \
 
 setsudopasswd(){ \
 if echo "$sudopasswd" | grep '0' >/dev/null 2>&1; then
-	echo "root ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers
 	echo "$username ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
 	fi
 
 if echo "$sudopasswd" | grep '1' >/dev/null 2>&1; then
-	echo "root ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers
-	echo "$username ALL=(ALL) ALL" >> /etc/sudoers
+	echo "Will continue without passwd"
 	fi
 }
 
-choosemouse(){ \
-mouse="$(whiptail --title "Mouse Settings" --menu "Should mouse accelleration be enabled?" 10 80 2 0 "Nope (the right choice)." 1 "Yep (if you're a loser)." 3>&1 1>&2 2>&3 3>&1)" || error "User quit the installer."
-}
 
-setmouse(){ \
-if echo "$mouse" | grep '0' >/dev/null 2>&1; then
-	cd /home/"$username"
-	cp .other/50-mouse-acceleration.conf /etc/X11/xorg.conf.d/50-mouse-acceleration.conf
-	fi
 
-if echo "$mouse" | grep '1' >/dev/null 2>&1; then
-	echo "Mouse acceleration enabled."
-	fi
-}
 error() { clear; printf "Installation could not complete:\\n%s\\n" "$1"; exit;}
 
 kek() { \
@@ -160,12 +114,8 @@ licensemsg
 getuser 
 choosedotfiles 
 installdotfiles 
-choosewm
-installwm
 chooseprograms
 installprograms
-choosemouse
-setmouse
 choosesudo
 makesudo
 setsudopasswd
