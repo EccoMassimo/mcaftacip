@@ -61,7 +61,7 @@ chooseprograms(){ \
 installprograms(){ \
 if echo "$programs" | grep '0' >/dev/null 2>&1; then
 	dpkg --add-architecture i386
-	apt install cowsay cmatrix libreoffice audacity irssi lynx htop neofetch ttf-mscorefonts-installer steam lolcat figlet screenkey obs-studio youtube-dl lutris gnome-tweak-tool
+	apt install cowsay cmatrix libreoffice audacity irssi lynx htop neofetch ttf-mscorefonts-installer steam lolcat figlet screenkey obs-studio youtube-dl lutris gnome-tweak-tool plank
 	fi
 
 if echo "$programs" | grep '1' >/dev/null 2>&1; then
